@@ -347,6 +347,40 @@ booky.delete("/book/delete/author/:isbn/:authorId", (req, res) => {
     })
 });
 
+/* 
+Route            /publication/delete/book
+Discription      delete a book from publication
+Access           Public
+Parameter        isbn,  publication id
+Method           DELETE
+*/
+booky.delete("/publication/delete/book/:isbn/:pubId", (req, res) => {
+    //update publication database
+    database.publications.forEach((publication) => {
+        if(publication.id === parseInt(req.params.pubId)) {
+            const newBooksList = publication.books.filter(
+                (book) => book !== req.params.isbn
+                );
+
+        publication.books = newBooksList;
+        return;
+        }
+    });
+
+    //update book database
+    database.books.forEach((book) => {
+        if(book.ISBN !== req.params.isbn){
+            book.publication = 0;
+            return;
+        }
+    });
+
+    return res.json({ 
+        books: database.books, 
+        publications: database.publications, 
+    });
+});
+
 booky.listen(3000, () => console.log("Hey  server booting..."));
 
 //HTTP client -> helper who helps you to make http request
