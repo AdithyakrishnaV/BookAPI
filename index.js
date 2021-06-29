@@ -291,6 +291,62 @@ booky.put("/publication/update/book/:isbn", (req, res) => {
      });
  });
 
+ /* 
+Route            /book/delete
+Discription      Delete a book
+Access           Public
+Parameter        isbn
+Method           DELETE
+*/
+booky.delete("/book/delete/:isbn", (req, res) => {
+   
+    const updatedBookDatabase = database.books.filter(
+      (book) => book.ISBN !== req.params.isbn
+    );
+
+    database.books = updatedBookDatabase;
+    return res.json({ books: database.books });
+});
+
+ /* 
+Route            /book/delete/author
+Discription      Delete a book from publication
+Access           Public
+Parameter        isbn, author id
+Method           DELETE
+*/
+booky.delete("/book/delete/author/:isbn/:authorId", (req, res) => {
+    //update book database
+    database.books.forEach((book) => {
+        if(book.ISBN === req.params.isbn) {
+            const newAuthorList = book.authors.filter(
+                (author) => author !== parseInt(req.params.authorId)
+            );//convert string to no
+
+            book.authors = newAuthorList;
+            return;
+        }   
+    });
+    
+    //update author database
+    database.author.forEach((author) => {
+        if(author.id === parseInt(req.params.authorId)) {
+            const newBooksList = author.books.filter(
+                (book) => book !== req.params.isbn
+            );
+        
+          author.books = newBooksList;
+          return;
+        }
+    });
+
+    return res.json({ 
+        message: "author was deleted",
+        book: database.books, 
+        author: database.author, 
+    })
+});
+
 booky.listen(3000, () => console.log("Hey  server booting..."));
 
 //HTTP client -> helper who helps you to make http request

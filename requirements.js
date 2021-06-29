@@ -63,11 +63,11 @@
 
 // PUT
 // UPdate the publication name using it's id [Task] 🚀
-// update/add books to publications
+// update/add books to publications✅
 
 // DELETE
-// Delete the publication
-// delete a book from publication.
+// Delete the publication✅
+// delete a book from publication.✅
 
 
 //How the server serves the request

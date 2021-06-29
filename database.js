@@ -1,10 +1,10 @@
-const books = [{
+let books = [{
     ISBN:"1234BOOK",
     title:"Getting started with MERN",
     pubDate:"20201-07-07",
     language:"en",
     numPage:250,
-    author:[1, 2],
+    authors:[1, 2],
     publication:[1],
     category:["tech", "programing", "education", "triller"],
   },
@@ -14,7 +14,7 @@ const books = [{
     pubDate:"20201-07-07",
     language:"en",
     numPage:250,
-    author:[1, 2],
+    authors:[1, 2],
     publication:[2],
     category:["tech", "programing", "education", "triller"],
   }
