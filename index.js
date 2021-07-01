@@ -9,9 +9,9 @@ const mongoose = require("mongoose");
 const database = require("./database");
 
 //Models
-const BookModels = require("./book");
-const AuthorModels = require("./author");
-const PublicationModels = require("./publication")
+const BookModel = require("./book");
+const AuthorModel = require("./author");
+const PublicationModel = require("./publication")
 
 // Initialization
 const booky = express();
@@ -37,8 +37,9 @@ Access           Public
 Parameter        None 
 Method           GET
 */
-booky.get("/", (req, res) => {
-    return res.json({ books: database.books });
+booky.get("/", async (req, res) => {
+    const getAllBooks = await BookModel.find();
+    return res.json(getAllBooks);
 });
 
 
@@ -49,12 +50,13 @@ Access           Public
 Parameter        isbn
 Method           GET
 */
-booky.get("/is/:isbn", (req, res) => {
-    const getSpecificBook = database.books.filter(
-        (book) => book.ISBN === req.params.isbn
-        );
-    if (getSpecificBook.length === 0) {
-        return res.json({error:`No book found for the ISBN of ${req.params.isbn}`,});
+booky.get("/is/:isbn", async (req, res) => {
+    const getSpecificBook = await BookModel.findOne({ ISBN: req.params.isbn });
+
+    if (!getSpecificBook) {
+        return res.json(
+            {error:`No book found for the ISBN of ${req.params.isbn}`,
+        });
     }
 
     return res.json({book: getSpecificBook});
@@ -69,12 +71,10 @@ Access           Public
 Parameter        category
 Method           GET
 */
-booky.get("/c/:category", (req, res) => {
-    const getSpecificBook = database.books.filter(
-        (book) => book.category.includes(req.params.category)
-    );
+booky.get("/c/:category", async (req, res) => {
+    const getSpecificBook =  await BookModel.findOne({ category: req.params.category });  
 
-    if (getSpecificBook.length === 0) {
+    if (!getSpecificBook) {
         return res.json({error:`No book found for the category of ${req.params.category}`,});
     }
 
@@ -88,12 +88,11 @@ Access           Public
 Parameter        lan
 Method           GET
 */
-booky.get("/lan/:language", (req, res) => {
-    const getSpecificBook = database.books.filter(
-        (book) => book.language.includes(req.params.language)
-    );
+booky.get("/lan/:language", async (req, res) => {
+    
+    const getSpecificBook = await BookModel.findOne({ language: req.params.language });
 
-    if (getSpecificBook.length === 0) {
+    if (!getSpecificBook) {
         return res.json({error:`No book found for the language of ${req.params.language}`,});
     }
 
@@ -108,8 +107,9 @@ Access           Public
 Parameter        None
 Method           GET
 */
-booky.get("/author", (req, res) => {
-    return res.json({ authors: database.author});
+booky.get("/author", async (req, res) => {
+    const getAllAuthors = await AuthorModel.findOne();
+    return res.json({ getAllAuthors });
 });
 
 /* 
@@ -206,10 +206,12 @@ Access           Public
 Parameter        isbn
 Method           POST
 */
-booky.post("/book/add", (req, res) => {
+booky.post("/book/add", async (req, res) => {
     const {newBook} = req.body; // const newBook = req.body.newBook; -> const {newBook} = req.body; --> destructuring
-    database.books.push(newBook);
-    return res.json({ book: database.books });
+    
+    const addNewBook = BookModel.create(newBook);
+
+    return res.json({ books: addNewBook, message: "new book added" });
 });
 
 /* 
@@ -220,21 +222,23 @@ Parameter        isbn
 Method           POST
 */
 booky.post("/author/add", (req, res) => {
-    const {newAuthor} = req.body; 
-    database.author.push(newAuthor);
-    return res.json({ author: database.author });
-});
+    const {newAuthor} = req.body;
+    AuthorModel.create(newAuthor);
+
+    return res.json({ message: "author was added" });
+ });
 
 /* 
 Route            /publication/add
-Discription      Add new author
+Discription      Add new publication
 Access           Public
 Parameter        isbn
 Method           POST
 */
-booky.post("/publication/add", (req, res) => {
-    const {newPublication} = req.body; 
-    database.publication.push(newPublication);
+booky.post("/publication/add", async (req, res) => {
+    const {newPublication} = req.body;
+    PublicationModel.create(newPublication);
+
     return res.json({ author: database.publication });
 });
 
