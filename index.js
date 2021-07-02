@@ -272,22 +272,53 @@ Access           Public
 Parameter        isbn
 Method           PUT
 */
-booky.put("/book/update/author/:isbn/:authorId", (req, res) => {
+booky.put("/book/update/author/:isbn", async (req, res) => {
     //update book database
-    database.books.forEach((book) => {
-        if (book.ISBN === req.params.isbn) {
-          return book.author.push(parseInt(req.params.authorId));
+
+    const updatedBook = await BookModel.findOneAndUpdate({
+        ISBN: req.params.isbn
+     },
+     {
+        $addToSet: {
+            authors: req.body.newAuthor
         }
-      });
+     },
+     {
+         new: true,
+     }
+    );
+    // database.books.forEach((book) => {
+    //     if (book.ISBN === req.params.isbn) {
+    //       return book.author.push(parseInt(req.params.authorId));
+    //     }
+    //   });
     
       // update author database
+
+      const updatedAuthor = await AuthorModel.findOneAndUpdate(
+          {
+           id: req.body.newAuthor
+        },
+        {
+            $addToSet: {
+               books: req.params.isbn
+            }
+        },
+        {
+            new: true
+        }
+      );
     
-      database.author.forEach((author) => {
-        if (author.id === parseInt(req.params.authorId))
-          return author.books.push(req.params.isbn);
-      });
+    //   database.author.forEach((author) => {
+    //     if (author.id === parseInt(req.params.authorId))
+    //       return author.books.push(req.params.isbn);
+    //   });
     
-      return res.json({ books: database.books, author: database.author });
+      return res.json(
+          { books: updatedBook, 
+            author: updatedAuthor,
+            message: "New author was added"
+        });
     });
     
 /* 
