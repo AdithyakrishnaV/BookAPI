@@ -29,8 +29,10 @@
 //Add / update new author✅
 
 //DELETE
-//Delete a book
-//Delete an author
+//Delete a book✅
+//Delete an author from a book✅
+
+
 
 // Authors
 
@@ -50,6 +52,8 @@
 // Delete an author
 
 
+
+
 // Publications
 
 //GET
@@ -59,7 +63,7 @@
 // to get list of publication based on book [task] ✅
 
 // POST
-// Add new publications [Task] 🚀
+// Add new publications [Task] ✅
 
 // PUT
 // UPdate the publication name using it's id [Task] 🚀
