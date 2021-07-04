@@ -14,8 +14,12 @@ Parameter        None
 Method           GET
 */
 Router.get("/", async (req, res) => {
+   try {
     const getAllAuthors = await AuthorModel.findOne();
     return res.json({ getAllAuthors });
+   } catch (error) {
+       return res.json({error: error.message});
+   }
 });
 
 /* 
@@ -25,15 +29,18 @@ Access           Public
 Parameter        name
 Method           GET
 */
-Router.get("/:name", (req, res) => {
-    const getSpecificBook = database.author.filter(
-        (author) => author.name === req.params.name
-    );
-    if (getSpecificBook.length === 0) {
-        return res.json({error:`No book found for the author of ${req.params.name}`,});
+Router.get("/:name", async (req, res) => {
+    try {
+        const getSpecificBook = await AuthorModel.findOne({name: req.params.name});
+    
+        if (!getSpecificBook) {
+            return res.json({error:`No book found for the author of ${req.params.name}`,});
+        }
+    
+        return res.json({author: getSpecificBook});
+    } catch (error) {
+        return res.json({error: error.message});
     }
-
-    return res.json({author: getSpecificBook});
 });
 
 /* 
@@ -43,17 +50,19 @@ Access           Public
 Parameter        isbn
 Method           GET
 */
-Router.get("/book/:isbn", (req, res) => {
-    const getSpecificAuthor = database.author.filter(
-        (author) => author.books.includes(req.params.isbn)
-    );
+Router.get("/book/:isbn", async (req, res) => {
+    try {
+        const getSpecificAuthor = await AuthorModel.findOne({books: req.params.isbn});
 
-    if (getSpecificAuthor.length === 0) {
-        return res.json({error:`No Author found for the book of ${req.params.isbn}`,
-    });
-   }
-
-   return res.json({authors: getSpecificAuthor});
+        if (!getSpecificAuthor) {
+            return res.json({error:`No Author found for the book of ${req.params.isbn}`,
+        });
+       }
+    
+       return res.json({authors: getSpecificAuthor});
+    } catch (error) {
+        return res.json({error: error.message});
+    }
 });
 
 /* 
@@ -64,10 +73,14 @@ Parameter        isbn
 Method           POST
 */
 Router.post("/add", (req, res) => {
-    const {newAuthor} = req.body;
-    AuthorModel.create(newAuthor);
-
-    return res.json({ message: "author was added" });
+    try {
+        const {newAuthor} = req.body;
+        AuthorModel.create(newAuthor);
+    
+        return res.json({ message: "author was added" });
+    } catch (error) {
+       return res.json({error: error.message});
+    }
  });
 
  module.exports = Router;
